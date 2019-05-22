@@ -1,0 +1,7 @@
+C:\Users\jorik\source\repos\lucrare de curs\lucrare de curs\bin\Debug\lucrare de curs.exe.config
+C:\Users\jorik\source\repos\lucrare de curs\lucrare de curs\bin\Debug\lucrare de curs.exe
+C:\Users\jorik\source\repos\lucrare de curs\lucrare de curs\bin\Debug\lucrare de curs.pdb
+C:\Users\jorik\source\repos\lucrare de curs\lucrare de curs\obj\Debug\lucrare de curs.csprojAssemblyReference.cache
+C:\Users\jorik\source\repos\lucrare de curs\lucrare de curs\obj\Debug\lucrare de curs.csproj.CoreCompileInputs.cache
+C:\Users\jorik\source\repos\lucrare de curs\lucrare de curs\obj\Debug\lucrare de curs.exe
+C:\Users\jorik\source\repos\lucrare de curs\lucrare de curs\obj\Debug\lucrare de curs.pdb
