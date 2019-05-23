@@ -21,8 +21,11 @@ namespace lucrare_de_curs
             builder.CreateNewPizza();
             builder.PrepareDough(dought.GetDought());
             builder.ApplyCheese(cheeze.GetCheese());
-            builder.ApplySausage(new AddSausage(sausage.GetSausage()), sausage.GetSausage());
-            builder.ApplySausage(new AddSausage(sausage.GetSausage()), sausage.GetSausage());
+            builder.ApplySausage(new AddSausage(), sausage.GetSausage());
+            builder.ApplySausage(new AddSausage(), sausage.GetSausage());
+            builder.ApplySausage(new AddSausage(), sausage.GetSausage());
+            builder.ApplySausage(new AddSausage(), sausage.GetSausage());
+            builder.ApplySausage(new AddSausage(), sausage.GetSausage());
             builder.AddCondiments();
             var pizza = builder.GetPizza();
 
@@ -425,6 +428,8 @@ namespace lucrare_de_curs
     }
     #endregion
 
+
+    #region Builder
     public abstract class PizzaBuilder
     {
         protected Pizza pizza;
@@ -437,6 +442,7 @@ namespace lucrare_de_curs
         {
             pizza = new Pizza();
             pizza.SausageTypeList = new SausageList();
+            pizza.SausageTypeList.Sausages = new List<Sausage>();
         }
 
         public abstract void PrepareDough(Dought dought);
@@ -462,13 +468,27 @@ namespace lucrare_de_curs
         {
             if(decorator is AddSausage)
             {
-                if(pizza.SausageTypeList.Sausages == null)
+                var validator = new SausageValidator();
+                var vegetablesValidator = new VegetablesValidator();
+
+                var command = new SetNextCommand(vegetablesValidator);
+                command.Execute(validator);
+                
+                if(validator.IsValid(pizza.SausageTypeList.Sausages)!= null)
                 {
-                    pizza.SausageTypeList.Sausages = new List<Sausage>();
+                    if (validator.IsValid(pizza.SausageTypeList.Sausages).Value)
+                    {
+                        pizza.SausageTypeList.Sausages.Add(sausage);
+                        SausageDecorator sausageDecorator = new AddSausage(sausage);
+                        pizza.SausageTypeList.TotalCost = sausageDecorator.GetCost();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Value is not valid");
+                    }
+                    
                 }
-                pizza.SausageTypeList.Sausages.Add(sausage);
-                SausageDecorator sausageDecorator = new AddSausage(sausage);
-                pizza.SausageTypeList.TotalCost = sausageDecorator.GetCost();
+               
             }
         }
 
@@ -478,7 +498,7 @@ namespace lucrare_de_curs
         }
     }
 
-    
+    #endregion
 
 
     #region Decorators
@@ -490,6 +510,11 @@ namespace lucrare_de_curs
         {
             _sausage = sausage;
         }
+
+        protected SausageDecorator()
+        {
+        }
+
         public virtual decimal GetCost()
         {
             return _sausage.Price;
@@ -499,6 +524,10 @@ namespace lucrare_de_curs
     public class AddSausage : SausageDecorator
     {
         public AddSausage(Sausage sausage) : base(sausage)
+        {
+
+        }
+        public AddSausage() : base()
         {
 
         }
@@ -516,8 +545,79 @@ namespace lucrare_de_curs
 
     #endregion
 
+    #region Chain of Responsibility
+    public abstract class Validator
+    {
+        protected Validator nextValidator;
+        public void SetNextValidator(Validator validator)
+        {
+            nextValidator = validator;
+        }
+
+        public abstract bool? IsValid(IEnumerable<object> genericList);
+    }
+
+    public class SausageValidator : Validator
+    {
+        public override bool? IsValid(IEnumerable<object> genericList)
+        {
+            if (genericList is List<Sausage>)
+            {
+                if(genericList.Count() <= 3)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (nextValidator != null)
+            {
+                nextValidator.IsValid(genericList);
+            }
+
+            return null;
+        }
+    }
+    public class VegetablesValidator : Validator
+    {
+        public override bool? IsValid(IEnumerable<object> genericList)
+        {
+            if(genericList is List<int>)
+            {
+                return true;
+            }
+
+            return null;
+        }
+    }
+
+    #endregion
 
 
 
+    #region Command
+    public abstract class Command
+    {
+        public abstract void Execute(Validator validator);
+    }
 
+    public class SetNextCommand : Command
+    {
+        private Validator _targetValidator;
+
+        public SetNextCommand(Validator firstValidator)
+        {
+            _targetValidator = firstValidator;
+        }
+
+
+
+        public override void Execute(Validator validator)
+        {
+            validator.SetNextValidator(_targetValidator);
+        }
+    }
+    #endregion
 }
