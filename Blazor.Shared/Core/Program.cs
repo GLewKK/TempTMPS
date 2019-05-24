@@ -466,30 +466,41 @@ namespace Blazor.Shared.Core
 
         public override void ApplySausage(SausageDecorator decorator, Sausage sausage)
         {
-            if(decorator is AddSausage)
-            {
-                var validator = new SausageValidator();
-                var vegetablesValidator = new VegetablesValidator();
 
-                var command = new SetNextCommand(vegetablesValidator);
-                command.Execute(validator);
-                
-                if(validator.IsValid(pizza.SausageTypeList.Sausages)!= null)
+            var validator = new SausageValidator();
+            var vegetablesValidator = new VegetablesValidator();
+
+            var command = new SetNextCommand(vegetablesValidator);
+            command.Execute(validator);
+
+
+            if (validator.IsValid(pizza.SausageTypeList.Sausages).HasValue)
+            {
+                if (validator.IsValid(pizza.SausageTypeList.Sausages).Value)
                 {
-                    if (validator.IsValid(pizza.SausageTypeList.Sausages).Value)
+                    if (decorator is AddSausage)
                     {
                         pizza.SausageTypeList.Sausages.Add(sausage);
                         SausageDecorator sausageDecorator = new AddSausage(sausage);
                         pizza.SausageTypeList.TotalCost = sausageDecorator.GetCost();
                     }
-                    else
+
+                    if (decorator is RemoveSausage)
                     {
-                        Console.WriteLine("Value is not valid");
+                        if(pizza.SausageTypeList.Sausages.Any(x => x.SausageType.Equals(sausage.SausageType)))
+                        {
+                            pizza.SausageTypeList.Sausages.Remove(sausage);
+                            SausageDecorator sausageDecorator = new RemoveSausage(sausage);
+                            pizza.SausageTypeList.TotalCost = sausageDecorator.GetCost();
+                        }
                     }
-                    
                 }
-               
+                else
+                {
+                    Console.WriteLine("Value is not valid");
+                }
             }
+           
         }
 
         public override void PrepareDough(Dought dought)
@@ -541,6 +552,27 @@ namespace Blazor.Shared.Core
             return base.GetCost() + 10;
         }
        
+    }
+
+    public class RemoveSausage : SausageDecorator
+    {
+        public RemoveSausage(Sausage sausage) : base(sausage)
+        {
+
+        }
+        public RemoveSausage() : base()
+        {
+
+        }
+        public override string SausageType { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override string Description { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override decimal Price { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public override decimal GetCost()
+        {
+            return base.GetCost() - 10;
+        }
+
     }
 
     #endregion
