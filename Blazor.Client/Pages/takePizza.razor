@@ -1,0 +1,182 @@
+﻿@page "/takePizza"
+
+@using Blazor.Shared.Core
+@using Blazor.Shared.Core.Enums
+
+<h1>Hello, world!</h1>
+
+Welcome to pizza Creator
+
+@if (IsTakenDough)
+{
+    <h1>You selected: @selectedDough</h1>
+}
+else
+{
+    <h3>Please Select Dough </h3>
+
+    <button onclick="@GetThinCrust">Thin Crust</button>
+
+    <button onclick="@GetFlatBread">Flat Bread</button>
+}
+
+@if (isSelectedCheese.HasValue)
+{
+    @if (isSelectedCheese.Value)
+    {
+        <h1>You selected: @selectedCheese</h1>
+    }
+    else
+    {
+        <h3>Please Select Cheese </h3>
+
+        <button onclick="@GetMozzarellaCheese">Mozzarella Cheese</button>
+
+        <button onclick="@GetCheddarChesse">Cheddar Chesse</button>
+    }
+}
+
+@if (isSelectedSausage.HasValue)
+{
+    @if (isSelectedSausage.Value)
+    {
+        <h1>You selected: @selectedSausage</h1>
+
+    }
+    else
+    {
+        <h3>Please Select Sausage </h3>
+
+        <button onclick="@GetKielbasaSausage">Kielbasa Sausage</button>
+
+        <button onclick="@GetItalianSausage">Italian Sausage</button>
+    }
+}
+
+@if (isPizzaReady.HasValue)
+{
+    @if (isPizzaReady.Value)
+    {
+        <h3>Your Pizza look like:</h3>
+        <p>@Pizza.CheeseType.CheeseType</p>
+        <p>@Pizza.CheeseType.Description</p>
+        <p>@Pizza.DoughtType.DoughtType</p>
+        <p>@Pizza.DoughtType.Description</p>
+        @foreach(var item in Pizza.SausageTypeList.Sausages)
+        {
+            <p>@item.SausageType</p>
+            <p>@item.Description</p>
+        }
+    }
+    else
+    {
+        <h3>Your Pizza is Ready</h3>
+        <button onclick="@GetPizza">Get the Pizza</button>
+    }
+}
+
+@functions{
+    MyPizzaBuilder builder = new MyPizzaBuilder();
+
+    Pizza Pizza = new Pizza();
+
+    bool IsTakenDough = false;
+    string selectedDough = string.Empty;
+
+    bool? isSelectedSausage = null;
+    string selectedSausage = string.Empty;
+
+    bool? isSelectedCheese = null;
+    string selectedCheese = string.Empty;
+
+    bool? isPizzaReady = null;
+
+    protected override void OnInit()
+    {
+        builder.CreateNewPizza();
+        base.OnInit();
+    }
+
+    void GetThinCrust()
+    {
+        ThinCrustFactory thinCrustFactory = new ThinCrustFactory();
+
+        builder.PrepareDough(thinCrustFactory.GetDought());
+
+        selectedDough = "Thin Crust";
+        IsTakenDough = true;
+        isSelectedCheese = false;
+
+
+    }
+
+    void GetFlatBread()
+    {
+        FlatBreadFactory flatBreadFactory = new FlatBreadFactory();
+
+        builder.PrepareDough(flatBreadFactory.GetDought());
+
+        selectedDough = "Flat Bread";
+        IsTakenDough = true;
+        isSelectedCheese = false;
+
+
+    }
+
+    void GetMozzarellaCheese()
+    {
+        MozzarellaCheeseFactory mozzarellaCheeseFactory = new MozzarellaCheeseFactory();
+
+        builder.ApplyCheese(mozzarellaCheeseFactory.GetCheese());
+        isSelectedCheese = true;
+        isSelectedSausage = false;
+        selectedCheese = "Mozzarella Cheese";
+
+
+    }
+
+    void GetCheddarChesse()
+    {
+        CheddarChesseFactory cheddarChesseFactory = new CheddarChesseFactory();
+
+        builder.ApplyCheese(cheddarChesseFactory.GetCheese());
+        isSelectedCheese = true;
+        isSelectedSausage = false;
+        selectedCheese = "Cheddar Cheese";
+
+
+
+    }
+
+    void GetKielbasaSausage()
+    {
+        KielbasaSausageFactory kielbasa = new KielbasaSausageFactory();
+        builder.ApplySausage(new AddSausage(), kielbasa.GetSausage());
+
+        isSelectedSausage = true;
+        isPizzaReady = false;
+        selectedSausage = "Kielbasa Sausage";
+
+    }
+
+    void GetItalianSausage()
+    {
+        ItalianSausageFactory italian = new ItalianSausageFactory();
+        builder.ApplySausage(new AddSausage(), italian.GetSausage());
+
+        isSelectedSausage = true;
+        isPizzaReady = false;
+        selectedSausage = "Italian Sausage";
+    }
+
+    void GetPizza()
+    {
+        Pizza = builder.GetPizza();
+        isPizzaReady = true;
+    }
+
+
+}
+
+
+

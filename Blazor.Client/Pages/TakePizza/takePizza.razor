@@ -1,0 +1,25 @@
+﻿@page "/asdf"
+
+@using Blazor.Shared.Core
+
+<h1>Hello, world!</h1>
+
+Welcome to pizza Creator
+
+
+<h3>Please Select Dough </h3>
+
+@functions{   
+
+    MyPizzaBuilder builder = new MyPizzaBuilder();
+
+    protected override Task OnInitAsync()
+    {
+        builder.CreateNewPizza();
+
+        return base.OnInitAsync();
+    }
+}
+
+
+

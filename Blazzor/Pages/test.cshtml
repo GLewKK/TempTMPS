@@ -1,0 +1,18 @@
+﻿@page "/test"
+@model Blazzor.Pages.testModel
+@{
+    ViewData["Title"] = "test";
+}
+
+<h2 id="header2" >@HeaderText</h2>
+<button type="button" onclick="@Init">Push Me</button>
+
+@functions{
+
+    private string HeaderText { get; set; }
+    void Init()
+    {
+
+    }
+}
+

@@ -1,0 +1,48 @@
+﻿@page "/counter"
+
+@using Blazor.Shared
+@using Blazor.Shared.Core
+
+
+<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+
+<button class="btn btn-primary" onclick="@IncrementCount">Click me</button>
+
+<button class="btn btn-primary" onclick="@Build">Click me</button>
+<p>@(Pizza.CheeseType != null ? Pizza.CheeseType.CheeseType : "Testicule")</p>
+@functions {
+    int currentCount = 0;
+
+
+    MyPizzaBuilder builder = new MyPizzaBuilder();
+
+
+    Pizza Pizza = new Pizza();
+    
+
+
+    void IncrementCount()
+    {
+        currentCount++;
+    }
+
+
+    void Build()
+    {
+
+        FlatBreadFactory dought = new FlatBreadFactory();
+        MozzarellaCheeseFactory cheeze = new MozzarellaCheeseFactory();
+        ItalianSausageFactory sausage = new ItalianSausageFactory();
+        builder.CreateNewPizza();
+
+        builder.PrepareDough(dought.GetDought());
+        builder.ApplyCheese(cheeze.GetCheese());
+        builder.ApplySausage(new AddSausage(), sausage.GetSausage());
+        builder.AddCondiments();
+
+        Pizza = builder.GetPizza();
+
+    }
+}
